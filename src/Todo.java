@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Todo {
+public class Todo implements Serializable {
     // Wenn der Accessmodifier(public, protected, private) bei den Attributen fehlt
     // ist es per standard: (default) package private
     String text;  // null
@@ -14,10 +15,10 @@ public class Todo {
 
     @Override // Die Override-Annotation ist freiwillig und passt auf, dass diese Methode wirklich eine andere überschreibt
     public String toString() {
-        return "Todo{" +
+        return "Todo[" +
                 "text='" + text + '\'' +
                 ", checked=" + checked +
                 ", created=" + created +
-                '}';
+                ']';
     }
 }

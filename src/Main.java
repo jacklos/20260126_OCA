@@ -1,22 +1,28 @@
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
 
+    static Scanner sc = new Scanner(System.in);
+    final static String OPTION = "---------\n" +
+            "New: Erstellt eine neue Todo\n" +
+            "List: Zeigt alle Todos an\n" +
+            "Check: Markiert die Todos als erledigt\n"+
+            "Delete: Löscht eine Todo\n" +
+            "Exit: Beendet das Programm\n" +
+            "---------";
 
+    static ArrayList<Todo> todolist = new ArrayList<>(); // Dynamische Liste
 
+    // File ist eine Klasse aus dem io-Package und steht für einen Pfad
+    static File file = new File("data\\todos.txt");
+
+    // Aus einem statischen Kontext dürfen wir nur auf statische Variablen/Attribute/Methoden zugreifen
+    // dh. in der Main-Methode(Die statisch ist) dürfen wir nur auf statische attribute zugreifen
     public static void main(String[] args) {
+        readFromFile(); // Liest zu Anfang alles aus der todos.txt
 
-
-        Scanner sc = new Scanner(System.in);
-        final String OPTION = "---------\n" +
-                "New: Erstellt eine neue Todo\n" +
-                "List: Zeigt alle Todos an\n" +
-                "Delete: Löscht eine Todo\n" +
-                "Exit: Beendet das Programm\n" +
-                "---------";
-
-        ArrayList<Todo> todolist = new ArrayList<>(); // Dynamische Liste
         // Switch - Für Fallunterscheidungen
         // Eignet sich, wenn wir nur eine Variable haben und deren Wert überprüfen wollen
 
@@ -38,12 +44,10 @@ public class Main {
                 case "new":
                     System.out.println("Was soll erledigt werden?");
                     String todoText = sc.nextLine();
-                    //if(todoText.isEmpty()) {
-                    //    continue LOOP;
-                    //}
                     Todo todo = new Todo(todoText);
                     todolist.add(todo);
                     System.out.println("Todo("+todoText+") erstellt!");
+                    saveToFile();
                     break;
                 case "list":
                     // enhanced for-loop / foreach
@@ -52,6 +56,13 @@ public class Main {
                     int i = 0;
                     for(Todo t:todolist) {
                         System.out.println(i+++": "+ t.toString());
+                    }
+                    break;
+                case "check": {
+                    System.out.println("Welche Todo soll als erledigt markiert werden?(Index)");
+                    int index = Integer.parseInt(sc.nextLine()); // parseInt() wandelt einen String in int um
+                    Todo zuBearbeitendeTodo = todolist.get(index);
+                    zuBearbeitendeTodo.checked = !zuBearbeitendeTodo.checked; // Toggle
                     }
                     break;
                 case "delete":
@@ -74,6 +85,31 @@ public class Main {
         }
 
     }
+
+    public static void saveToFile() {
+        try {
+            if(!file.exists()) {
+                file.createNewFile();// Diese Methode könnte eine IOException werfen -> Problem weil: Pfad nicht richtig, oder keine Rechte
+            }
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
+            out.writeObject(todolist);
+        } catch(IOException e) {
+            System.out.println("Problem");
+            e.printStackTrace();
+        }
+    }
+    public static void readFromFile() {
+        try {
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+            todolist = (ArrayList<Todo>)in.readObject();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
 
 
 
