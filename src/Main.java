@@ -35,6 +35,8 @@ public class Main {
 
         // TODO: Check-Funktionalität einbauen
         // Die User können auswählen, welche Todo als 'erledigt' markiert wird (checked = true)
+        // TODO: Kommentiert so viel wie möglich mit eigenen Worten - Was macht die Zeile/Wieso ist sie wichtig?
+
 
         boolean exit = false;
         LOOP:while(!exit) {
@@ -59,17 +61,29 @@ public class Main {
                     }
                     break;
                 case "check": {
-                    System.out.println("Welche Todo soll als erledigt markiert werden?(Index)");
-                    int index = Integer.parseInt(sc.nextLine()); // parseInt() wandelt einen String in int um
-                    Todo zuBearbeitendeTodo = todolist.get(index);
-                    zuBearbeitendeTodo.checked = !zuBearbeitendeTodo.checked; // Toggle
+                    try {
+                        System.out.println("Welche Todo soll als erledigt markiert werden?(Index)");
+                        int index = Integer.parseInt(sc.nextLine()); // parseInt() wandelt einen String in int um
+                        Todo zuBearbeitendeTodo = todolist.get(index);
+                        zuBearbeitendeTodo.checked = !zuBearbeitendeTodo.checked; // Toggle
+                    } catch(Exception e) { // wird bei jeder Exception aktiv, die im Try-Block geworfen wird
+                        System.out.println("Hier ist etwas schiefgegangen!");
+                    } finally {
+                        // finally wird immer ausgeführt - wird oft zum schließen von Resourcen verwendet
+                    }
                     }
                     break;
                 case "delete":
-                    System.out.println("Welche Todo möchten Sie löschen?(Index)");
-                    int index = Integer.parseInt(sc.nextLine()); // parseInt() wandelt einen String in int um
-                    Todo t = todolist.remove(index);
-                    System.out.println("Todo("+t.text+") wurde gelöscht");
+                    try {
+                        System.out.println("Welche Todo möchten Sie löschen?(Index)");
+                        int index = Integer.parseInt(sc.nextLine()); // parseInt() wandelt einen String in int um
+                        Todo t = todolist.remove(index);
+                        System.out.println("Todo("+t.text+") wurde gelöscht");
+                    } catch(NumberFormatException e) {
+                        System.out.println("Das ist keine Zahl gewesen! GEBEN SIE NUR ZAHLEN ZWISCHEN 0-"+(todolist.size()-1)+" EIN!");
+                    } catch(IndexOutOfBoundsException e) {
+                        System.out.println("Diese Zahl ist nicht im Wertebereich! GEBEN SIE NUR ZAHLEN ZWISCHEN 0-"+(todolist.size()-1)+" EIN!");
+                    }
                     // code
                     break;
                 case "exit":
@@ -87,16 +101,18 @@ public class Main {
     }
 
     public static void saveToFile() {
+
         try {
             if(!file.exists()) {
                 file.createNewFile();// Diese Methode könnte eine IOException werfen -> Problem weil: Pfad nicht richtig, oder keine Rechte
             }
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
             out.writeObject(todolist);
+
         } catch(IOException e) {
             System.out.println("Problem");
             e.printStackTrace();
-        }
+        }  // Try-With-Resources
     }
     public static void readFromFile() {
         try {
